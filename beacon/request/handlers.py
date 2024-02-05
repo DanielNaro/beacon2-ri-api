@@ -104,6 +104,7 @@ def generic_handler(db_fn, request=None):
             qparams.query.request_parameters['datasets'] = '*******'
             _, _, datasets = get_datasets(None, qparams)
             beacon_datasets = [ r for r in datasets ]
+            LOG.debug(beacon_datasets)
             LOG.debug(authorized_datasets)
             specific_datasets = [ r['id'] for r in beacon_datasets if r['id'] not in authorized_datasets]
             response_datasets = [ r['id'] for r in beacon_datasets if r['id'] in authorized_datasets]
@@ -122,6 +123,7 @@ def generic_handler(db_fn, request=None):
             with open("/beacon/beacon/request/response_type.yml", 'r') as response_type_file:
                 response_type_dict = yaml.safe_load(response_type_file)
             LOG.debug(response_type_dict)
+            LOG.debug(username)
             try:
                 response_type = response_type_dict[username]
             except Exception:
@@ -206,7 +208,7 @@ def filtering_terms_handler(db_fn, request=None):
             access_token = access_token[7:]  # cut out 7 characters: len('Bearer ')
 
             
-            authorized_datasets, authenticated = await resolve_token(access_token, search_datasets)
+            authorized_datasets, authenticated, _ = await resolve_token(access_token, search_datasets)
             #LOG.debug(authorized_datasets)
             #LOG.debug('all datasets:  %s', all_datasets)
             LOG.info('resolved datasets:  %s', authorized_datasets)
