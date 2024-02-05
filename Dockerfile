@@ -23,7 +23,7 @@ RUN pip install -r /tmp/requirements.txt
 ##########################
 FROM python:3.10-buster
 
-LABEL maintainer "CRG System Developers"
+LABEL maintainer = "CRG System Developers"
 LABEL org.label-schema.schema-version="2.0"
 LABEL org.label-schema.vcs-url="https://github.com/EGA-archive/beacon-2.x/"
 
