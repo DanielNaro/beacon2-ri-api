@@ -88,6 +88,7 @@ class RequestParams(CamelModel):
     def from_request(self, request: Request) -> Self:
         if request.method != "POST" or not request.has_body or not request.can_read_body:
             for k, v in request.query.items():
+                LOG.debug(f"k: {k}; v:{v}")
                 if k == "requestedSchema":
                     self.meta.requested_schemas = [v]
                 elif k == "skip":

@@ -20,16 +20,18 @@ from .auth import bearer_required
 from .plugins import DummyPermissions as PermissionsProxy
 
 LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
 
 @bearer_required
 async def permission(request: Request, username: Optional[str], list_visa_datasets: Optional [list]):
-
+    LOG.setLevel(logging.DEBUG)
+    LOG.error("in permission")
     if request.headers.get('Content-Type') == 'application/json':
         post_data = await request.json()
     else:
         post_data = await request.post()
     LOG.debug('POST DATA: %s', post_data)
-
+    LOG.error('POST DATA: %s', post_data)
     v = post_data.get('datasets')
     if v is None:
         requested_datasets = []
@@ -41,11 +43,14 @@ async def permission(request: Request, username: Optional[str], list_visa_datase
         requested_datasets = v.split(sep=',')  # type: ignore
         
     LOG.debug('requested datasets: %s', requested_datasets)
+    LOG.error('requested datasets: %s', requested_datasets)
     datasets = await request.app['permissions'].get(username, requested_datasets=requested_datasets)
     LOG.debug('selected datasets: %s', datasets)
+    LOG.error('selected datasets: %s', datasets)
     dict_returned={}
     dict_returned['username']=username
     datasets=list(datasets)
+    LOG.error('username: {}'.format(username))
     LOG.error('visa_datasets: {}'.format(list_visa_datasets))
     for visa_dataset in list_visa_datasets:
         datasets.append(visa_dataset)

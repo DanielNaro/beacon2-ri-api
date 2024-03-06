@@ -27,6 +27,9 @@ async def resolve_token(token, requested_datasets_ids) -> Tuple[List[str], bool,
     # * filter out the datasets list, with the ones the user has access to
     # * return _all_ the datasets the user has access to, in case the datasets list is empty
     async with ClientSession() as session:
+        LOG.debug(permissions_url)
+        LOG.debug(token)
+        LOG.debug(requested_datasets_ids)
         async with session.post(
                 permissions_url,
                 headers={'Authorization': 'Bearer ' + token,
@@ -42,6 +45,7 @@ async def resolve_token(token, requested_datasets_ids) -> Tuple[List[str], bool,
             '''
             content = await resp.content.read()
             content =  content.decode('utf-8')
+            LOG.debug(content)
             content_splitted= content.split(':')
             authorized_datasets = content_splitted[-1]
             authorized_datasets_list = authorized_datasets.split('"')

@@ -23,7 +23,8 @@ VARIANTS_PROPERTY_MAP = {
     "variantMaxLength": "variantInternalId",
     "geneId": "molecularAttributes.geneIds",
     "genomicAlleleShortForm": "identifiers.genomicHGVSId",
-    "aminoacidChange": "molecularAttributes.aminoacidChanges"
+    "aminoacidChange": "molecularAttributes.aminoacidChanges",
+    "dataset": "_info.datasetId"
 }
 
 def include_resultset_responses(query: Dict[str, List[dict]], qparams: RequestParams):
@@ -79,7 +80,7 @@ def generate_position_filter_end(key: str, value: List[int]) -> List[Alphanumeri
 
 def apply_request_parameters(query: Dict[str, List[dict]], qparams: RequestParams):
     collection = 'g_variants'
-    LOG.debug("Request parameters len = {}".format(len(qparams.query.request_parameters)))
+    LOG.debug("Request parameters = {}".format(qparams.query.request_parameters))
     if len(qparams.query.request_parameters) > 0 and "$and" not in query:
         query["$and"] = []
     for k, v in qparams.query.request_parameters.items():
@@ -114,6 +115,7 @@ def apply_request_parameters(query: Dict[str, List[dict]], qparams: RequestParam
             except KeyError:
                 raise web.HTTPNotFound    
         else:
+            LOG.debug(f"VARIANTS_PROPERTY_MAP: {VARIANTS_PROPERTY_MAP}, k: {k}, v:{v}")
             try:
                 query["$and"].append(apply_alphanumeric_filter({}, AlphanumericFilter(
                     id=VARIANTS_PROPERTY_MAP[k],
@@ -121,11 +123,13 @@ def apply_request_parameters(query: Dict[str, List[dict]], qparams: RequestParam
                 ), collection))
             except KeyError:
                 raise web.HTTPNotFound
+    LOG.debug("Query = {}".format(query))
     return query
 
 
 def get_variants(entry_id: Optional[str], qparams: RequestParams, dataset: str):
     collection = 'g_variants'
+    LOG.debug(f"qparams: {qparams}")
     query = apply_request_parameters({}, qparams)
     LOG.debug(qparams.query.filters)
     query = apply_filters(query, qparams.query.filters, collection)
@@ -133,6 +137,7 @@ def get_variants(entry_id: Optional[str], qparams: RequestParams, dataset: str):
     schema = DefaultSchemas.GENOMICVARIATIONS
     with open("/beacon/beacon/request/datasets.yml", 'r') as datasets_file:
         datasets_dict = yaml.safe_load(datasets_file)
+        LOG.debug(f"datasets_dict: {datasets_dict}")
     include = qparams.query.include_resultset_responses
     limit = qparams.query.pagination.limit
     if limit > 100 or limit == 0:
@@ -161,6 +166,7 @@ def get_variants(entry_id: Optional[str], qparams: RequestParams, dataset: str):
                     if dataset_count == 0:
                         dataset_count=get_count(client.beacon.genomicVariations, {'$or': query_count['$or']})
                         count+=get_count(client.beacon.genomicVariations, {'$or': query_count['$or']})
+                        LOG.debug("getting documents")
                         docs = get_documents(
                             client.beacon.genomicVariations,
                             {'$or': query_count['$or']},
@@ -202,7 +208,7 @@ def get_variants(entry_id: Optional[str], qparams: RequestParams, dataset: str):
                         i=1
                 if query_count["$or"]!=[]:
                     dataset_count = get_count(client.beacon.genomicVariations, query_count)
-                    LOG.debug(dataset_count)
+                    LOG.debug(f"dataset_count: {dataset_count}, variantions: {client.beacon.genomicVariations}, query_count {query_count}")
                     docs = get_documents(
                         client.beacon.genomicVariations,
                         query_count,
@@ -214,6 +220,7 @@ def get_variants(entry_id: Optional[str], qparams: RequestParams, dataset: str):
         if dataset_count==0:
             return schema, count, -1, None
     elif include == 'ALL':
+        LOG.debug("getting all")
         count = get_count(client.beacon.genomicVariations, query)
         query_count=query
         i=1
