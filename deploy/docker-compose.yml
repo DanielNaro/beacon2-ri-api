@@ -4,7 +4,7 @@ networks:
   beacon-priv:
   idp-priv:
   pub:
-  my-app-network:
+  my-beacon-network:
     external: true
 
 services:
@@ -19,6 +19,8 @@ services:
     networks:
       - beacon-priv 
     tty: true
+    volumes:
+      - /mnt/d/BeaconWorkspace/BeaconReferenceImplementation:/data
 
   ###########################################
   # training-ui
@@ -49,7 +51,7 @@ services:
       - ./mongo-init/:/docker-entrypoint-initdb.d/:ro
     networks:
       - beacon-priv
-      - my-app-network
+      - my-beacon-network
 
   mongo-express:
     image: mongo-express
@@ -69,7 +71,7 @@ services:
 
   beacon:
     build: ..
-    image: egarchive/beacon:2.0
+    image: danielnaro/beacon:2.4
     hostname: beacon
     container_name: beacon
     volumes:
@@ -85,7 +87,7 @@ services:
       - beacon-priv
       - pub
       - idp-priv
-      - my-app-network
+      - my-beacon-network
     working_dir: '/beacon'
     entrypoint: ['python','-m','beacon']
     # entrypoint: ['/bin/sleep','100000000']
@@ -95,11 +97,11 @@ services:
   ###########################################
   
   permissions:
-    image: egarchive/beacon:2.0
+    image: danielnaro/beacon:2.4
     hostname: beacon-permissions
     container_name: beacon-permissions
     volumes:
-      - ../permissions/:/beacon/permissions/  # inject the code, so we see the modifications "live"
+      - /mnt/c/Users/narow/PycharmProjects/beacon2-ri-api/permissions:/beacon/permissions/  # inject the code, so we see the modifications "live"
       - ./logger.yml:/beacon/logger.yml
     ports:
       - "5051:5051"
@@ -108,7 +110,7 @@ services:
       - beacon-priv
       - pub
       - idp-priv
-      - my-app-network
+      - my-beacon-network
     #entrypoint: ['/bin/sleep','100000000']
     working_dir: '/beacon'
     entrypoint: ['python','-m', 'permissions']
@@ -120,8 +122,8 @@ services:
   # and we don't need a delay in-between. We can rely on the depends_on only.
 
   idp:
-    #image: jboss/keycloak
-    image: sleighzy/keycloak
+    image: jboss/keycloak
+    #image: sleighzy/keycloak
     hostname: idp
     container_name: idp
     environment:
@@ -142,7 +144,8 @@ services:
       #- KC_HOSTNAME_URL=https://beacon-network-test2.ega-archive.org
       #- KC_HOSTNAME_ADMIN_URL=https://beacon-network-test2.ega-archive.org
       #- KEYCLOAK_FRONTEND_URL=https://beacon-network-test2.ega-archive.org/auth/
-      #- PROXY_ADDRESS_FORWARDING=true
+      - KEYCLOAK_FRONTEND_URL=http://idp:8080/auth/
+      - PROXY_ADDRESS_FORWARDING=true
     volumes:
       - ./beacon-realm.json:/tmp/beacon-realm.json
     ports:
@@ -151,7 +154,7 @@ services:
     networks:
       - pub
       - idp-priv 
-      - my-app-network
+      - my-beacon-network
     depends_on:
       - idp-db
 
@@ -165,19 +168,21 @@ services:
       - POSTGRES_PASSWORD=secret
     networks:
       - idp-priv 
-      - my-app-network
+      - my-beacon-network
   
   frontend:
     build:
       context: ../frontend
-    #command: ["yarn"]
-    #command: ["node", "/opt/yarn-v1.22.19/bin/yarn.js", "start" ]
-    command: yarn start
-    container_name: react
+    command: node /opt/yarn-v1.22.19/bin/yarn.js start
+    container_name: beacon-ui
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - 3000:3000
+    stdin_open: true
     volumes:
-      - ../frontend:/usr/src/app
+      - /mnt/c/Users/narow/PycharmProjects/beacon2-ri-api/frontend/.env:/frontend/.env
+      - /mnt/c/Users/narow/PycharmProjects/beacon2-ri-api/frontend/src/config.json:/frontend/src/config.json
 
 
 

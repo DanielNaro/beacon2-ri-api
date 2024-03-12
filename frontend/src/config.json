@@ -1,7 +1,5 @@
 {
-
-    "API_URL": "http://localhost:5050/api",
-    "REDIRECT_URL": "please insert here your redirect URL",
+    "API_URL": "http://localhost:8080/api",
+    "REDIRECT_URL": "http://localhost:3000/",
     "KEYCLOAK_URL": "http://localhost:8080"
-
   }
