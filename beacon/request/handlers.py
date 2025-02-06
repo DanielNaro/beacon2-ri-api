@@ -51,6 +51,7 @@ def generic_handler(db_fn, request=None):
         skip = qparams.query.pagination.skip
         limit = qparams.query.pagination.limit
         LOG.debug(limit)
+        LOG.debug(json_body)
         LOG.debug(qparams)
         search_datasets = []
         authenticated=False
@@ -104,6 +105,7 @@ def generic_handler(db_fn, request=None):
             qparams.query.request_parameters['datasets'] = '*******'
             _, _, datasets = get_datasets(None, qparams)
             beacon_datasets = [ r for r in datasets ]
+            LOG.debug(beacon_datasets)
             LOG.debug(authorized_datasets)
             specific_datasets = [ r['id'] for r in beacon_datasets if r['id'] not in authorized_datasets]
             response_datasets = [ r['id'] for r in beacon_datasets if r['id'] in authorized_datasets]
@@ -111,7 +113,8 @@ def generic_handler(db_fn, request=None):
             LOG.debug(response_datasets)
             specific_datasets_unauthorized.append(specific_datasets)
 
-
+        LOG.debug(f"json_body: {json_body}")
+        LOG.debug(f"request: {request}")
         qparams = RequestParams(**json_body).from_request(request)
         include = qparams.query.include_resultset_responses
 
@@ -122,10 +125,13 @@ def generic_handler(db_fn, request=None):
             with open("/beacon/beacon/request/response_type.yml", 'r') as response_type_file:
                 response_type_dict = yaml.safe_load(response_type_file)
             LOG.debug(response_type_dict)
+            LOG.debug(username)
             try:
                 response_type = response_type_dict[username]
             except Exception:
                 LOG.debug(Exception)
+                LOG.debug(username)
+                LOG.debug(response_type_dict)
                 response_type = ['boolean']
             if response_type is not None:
                 for response_typed in response_type:    
@@ -147,6 +153,7 @@ def generic_handler(db_fn, request=None):
         new_count=0
         for dataset in response_datasets:
             LOG.debug(dataset)
+            LOG.debug(f"entry_id: {entry_id}; qparams: {qparams}; dataset: {dataset}; db_fn: {db_fn}")
             entity_schema, count, dataset_count, records = db_fn(entry_id, qparams, dataset)
             
             if dataset_count != -1:
@@ -206,7 +213,7 @@ def filtering_terms_handler(db_fn, request=None):
             access_token = access_token[7:]  # cut out 7 characters: len('Bearer ')
 
             
-            authorized_datasets, authenticated = await resolve_token(access_token, search_datasets)
+            authorized_datasets, authenticated, _ = await resolve_token(access_token, search_datasets)
             #LOG.debug(authorized_datasets)
             #LOG.debug('all datasets:  %s', all_datasets)
             LOG.info('resolved datasets:  %s', authorized_datasets)

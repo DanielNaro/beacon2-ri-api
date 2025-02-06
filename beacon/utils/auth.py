@@ -1,4 +1,5 @@
 import logging
+from typing import Tuple, List, Optional
 
 from aiohttp import ClientSession, web
 
@@ -9,12 +10,12 @@ from ..conf import permissions_url, idp_user_info as idpu, lsaai_user_info as ls
 
 LOG = logging.getLogger(__name__)
 
-async def resolve_token(token, requested_datasets_ids):
+async def resolve_token(token, requested_datasets_ids) -> Tuple[List[str], bool, Optional[str]]:
     # If the user is not authenticated (ie no token)
     # we pass (requested_datasets, False) to the database function: it will filter out the datasets list, with the public ones
     if token is None:
         public_datasets = [ d["name"] for d in filter_public_datasets(requested_datasets_ids) ]
-        return public_datasets, False
+        return public_datasets, False, None
     new_requested_datasets_ids=[]
     for dataset in requested_datasets_ids:
         dataset=str(dataset)
@@ -26,6 +27,9 @@ async def resolve_token(token, requested_datasets_ids):
     # * filter out the datasets list, with the ones the user has access to
     # * return _all_ the datasets the user has access to, in case the datasets list is empty
     async with ClientSession() as session:
+        LOG.debug(permissions_url)
+        LOG.debug(token)
+        LOG.debug(requested_datasets_ids)
         async with session.post(
                 permissions_url,
                 headers={'Authorization': 'Bearer ' + token,
@@ -41,6 +45,7 @@ async def resolve_token(token, requested_datasets_ids):
             '''
             content = await resp.content.read()
             content =  content.decode('utf-8')
+            LOG.debug(content)
             content_splitted= content.split(':')
             authorized_datasets = content_splitted[-1]
             authorized_datasets_list = authorized_datasets.split('"')

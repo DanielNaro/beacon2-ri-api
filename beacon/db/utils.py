@@ -30,6 +30,7 @@ def get_count(collection: Collection, query: dict) -> int:
     else:
         #LOG.debug("FINAL QUERY (COUNT): {}".format(query))
         LOG.debug("Returning count")
+        LOG.debug(f"query: {query}")
         return collection.count_documents(query)
 
 

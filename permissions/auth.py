@@ -19,6 +19,7 @@ from beacon import conf
 
 
 LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
 
 
 idp_user_info = conf.idp_user_info
@@ -38,6 +39,7 @@ async def get_user_info(access_token):
     On failure (ie an invalid token), we try to get an explanation.
     '''
     LOG.debug('Token: %s', access_token)
+    LOG.error('Token: %s', access_token)
 
     # Invalid access token
     '''
@@ -61,8 +63,11 @@ async def get_user_info(access_token):
         '''
     try:
         decoded = jwt.decode(access_token, options={"verify_signature": False})
+        LOG.error('decoded')
         LOG.error(decoded)
+        LOG.error('issuer')
         issuer = decoded['iss']
+        LOG.error(issuer)
         list_visa_datasets=[]
         visa_datasets=None
     except Exception:
@@ -72,14 +77,17 @@ async def get_user_info(access_token):
     if issuer in conf.trusted_issuers:
         pass
     else:
+        LOG.error("issuer is not trusted")
         raise web.HTTPUnauthorized('invalid token')
             
     user = None
     async with ClientSession(trust_env=True) as session:
         headers = { 'Accept': 'application/json', 'Authorization': 'Bearer ' + access_token }
-        LOG.debug('Contacting %s', idp_user_info)
+        LOG.setLevel(logging.DEBUG)
+        LOG.error('Contacting %s', idp_user_info)
+        LOG.error("testing debug")
         async with session.get(idp_user_info, headers=headers) as resp:
-            LOG.debug('Response %s', resp)
+            LOG.error('Response %s', resp)
             if resp.status == 200:
                 user = await resp.json()
                 LOG.error(user)
@@ -89,7 +97,8 @@ async def get_user_info(access_token):
                 LOG.error('Not a Keycloak token')
                 #LOG.error('Content: %s', content)
                 user = 'public'
-                
+    LOG.error('as if user was public')
+    LOG.error(user)
     if user == 'public':
         async with ClientSession(trust_env=True) as session:
             headers = { 'Accept': 'application/json', 'Authorization': 'Bearer ' + access_token }
@@ -136,15 +145,18 @@ def bearer_required(func):
         try:
             user, list_visa_datasets = await get_user_info(access_token)
         except Exception:
+            LOG.error('get_user_info error')
             user = 'public'
         LOG.info('The user is: %r', user)
         if user is None:
             raise web.HTTPUnauthorized()
         elif user == 'public':
+            LOG.error('user is public')
             username = 'public'
         else:
             username = user.get('preferred_username')
         LOG.debug('username: %s', username)
+        LOG.error('username: %s', username)
 
         return await func(request, username, list_visa_datasets)
     return decorated

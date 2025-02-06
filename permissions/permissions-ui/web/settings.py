@@ -141,13 +141,13 @@ AUTHENTICATION_BACKENDS = [
 OIDC_RP_CLIENT_ID = env('OIDC_RP_CLIENT_ID')
 OIDC_RP_CLIENT_SECRET = env('OIDC_RP_CLIENT_SECRET')
 
-#OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localhost:8080/auth/realms/Beacon/protocol/openid-connect/auth"
-#OIDC_OP_TOKEN_ENDPOINT = "http://idp:8080/auth/realms/Beacon/protocol/openid-connect/token"
-#OIDC_OP_USER_ENDPOINT = "http://idp:8080/auth/realms/Beacon/protocol/openid-connect/userinfo"
+OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localhost:8080/auth/realms/Beacon/protocol/openid-connect/auth"
+OIDC_OP_TOKEN_ENDPOINT = "http://idp:8080/auth/realms/Beacon/protocol/openid-connect/token"
+OIDC_OP_USER_ENDPOINT = "http://idp:8080/auth/realms/Beacon/protocol/openid-connect/userinfo"
 
-OIDC_OP_AUTHORIZATION_ENDPOINT = "https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/auth"
-OIDC_OP_TOKEN_ENDPOINT = "https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/token"
-OIDC_OP_USER_ENDPOINT = "https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/userinfo"
+#OIDC_OP_AUTHORIZATION_ENDPOINT = "https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/auth"
+#OIDC_OP_TOKEN_ENDPOINT = "https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/token"
+#OIDC_OP_USER_ENDPOINT = "https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/userinfo"
 OIDC_STORE_ID_TOKEN = True
 OIDC_OP_LOGOUT_URL_METHOD = 'my_auth.provider_logout'
 OIDC_OP_LOGOUT_ENDPOINT = "https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/logout"
@@ -159,5 +159,5 @@ LOGOUT_REDIRECT_URL = "http://localhost:8003"
 
 	
 OIDC_RP_SIGN_ALGO = 'RS256'
-#OIDC_OP_JWKS_ENDPOINT = 'http://idp:8080/auth/realms/Beacon/protocol/openid-connect/certs'
-OIDC_OP_JWKS_ENDPOINT = 'https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/certs'
+OIDC_OP_JWKS_ENDPOINT = 'http://idp:8080/auth/realms/Beacon/protocol/openid-connect/certs'
+#OIDC_OP_JWKS_ENDPOINT = 'https://beacon-network-demo2.ega-archive.org/auth/realms/Beacon/protocol/openid-connect/certs'

@@ -48,6 +48,7 @@ def get_analyses(entry_id: Optional[str], qparams: RequestParams, dataset: str):
         query_count["$or"]=[]
         i=1
         for k, v in datasets_dict.items():
+            LOG.debug(f"k: {k}, v: {v}")
             query_count["$or"]=[]
             if k == dataset:
                 for id in v:
@@ -92,6 +93,7 @@ def get_analyses(entry_id: Optional[str], qparams: RequestParams, dataset: str):
         query_count=query
         i=1
         query_count["$or"]=[]
+        LOG.debug(f"datasets_dict: {datasets_dict}")
         for k, v in datasets_dict.items():
             if k == dataset:
                 for id in v:

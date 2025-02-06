@@ -108,6 +108,7 @@ def get_biosamples(entry_id: Optional[str], qparams: RequestParams, dataset: str
                         query_count["$or"].append(queryid)
                         i=1
                 if query_count["$or"]!=[]:
+                    LOG.debug(f"client.beacon.biosamples: {client.beacon.biosamples}, query_count: {query_count}")
                     dataset_count = get_count(client.beacon.biosamples, query_count)
                     LOG.debug(dataset_count)
                     docs = get_documents(

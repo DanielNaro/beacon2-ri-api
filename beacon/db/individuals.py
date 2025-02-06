@@ -37,7 +37,7 @@ def apply_request_parameters(query: Dict[str, List[dict]], qparams: RequestParam
     v_list=[]
     query_2={}
     for k, v in qparams.query.request_parameters.items():
-        LOG.debug(k)
+        LOG.debug(f"k: {k}; v: {v}")
         
         if k == 'filters':
             if 'genomicVariations' in v:
@@ -92,6 +92,7 @@ def apply_request_parameters(query: Dict[str, List[dict]], qparams: RequestParam
 
 def get_individuals(entry_id: Optional[str], qparams: RequestParams, dataset: str):
     collection = 'individuals'
+    LOG.debug(qparams)
     query = apply_request_parameters({}, qparams)
     LOG.debug(qparams.query.filters)
     query = apply_filters(query, qparams.query.filters, collection)

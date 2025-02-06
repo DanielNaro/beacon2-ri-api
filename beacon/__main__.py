@@ -112,7 +112,7 @@ def main(path=None):
             expose_headers="*",
             allow_methods=("POST", "PATCH", "GET", "OPTIONS"),
             allow_headers=DEFAULT_ALLOW_HEADERS),
-        "https://beacon-network-test2.ega-archive.org":
+        "http://localhost:8080":
             aiohttp_cors.ResourceOptions(allow_credentials=True,
             expose_headers="*",
             allow_methods=("POST", "PATCH", "GET", "OPTIONS"),

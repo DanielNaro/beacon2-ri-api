@@ -1,5 +1,5 @@
 {
-    "API_URL": "https://beacon-apis-test.ega-archive.org/api",
+    "API_URL": "http://idp:8080/api",
     "REDIRECT_URL": "http://localhost:3000/",
-    "KEYCLOAK_URL": "https://beacon-network-demo2.ega-archive.org"
+    "KEYCLOAK_URL": "http://idp:8080"
   }
