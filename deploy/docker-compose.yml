@@ -126,8 +126,8 @@ services:
   # and we don't need a delay in-between. We can rely on the depends_on only.
 
   idp:
-    #image: quay.io/keycloak/keycloak:12.0.0
-    image: sleighzy/keycloak
+    image: keycloak/keycloak
+    #image: sleighzy/keycloak
     hostname: idp
     container_name: idp
     environment:
@@ -148,7 +148,8 @@ services:
       #- KC_HOSTNAME_URL=https://beacon-network-test2.ega-archive.org
       #- KC_HOSTNAME_ADMIN_URL=https://beacon-network-test2.ega-archive.org
       #- KEYCLOAK_FRONTEND_URL=https://beacon-network-test2.ega-archive.org/auth/
-      #- PROXY_ADDRESS_FORWARDING=true
+      - KEYCLOAK_FRONTEND_URL=http://idp:8080/auth/
+      - PROXY_ADDRESS_FORWARDING=true
     volumes:
       - ./beacon-realm.json:/tmp/beacon-realm.json
     ports:
@@ -156,10 +157,11 @@ services:
       - "9991:8443"
     networks:
       - pub
-      - idp-priv 
+      - idp-priv
       - my-app-network
     depends_on:
       - idp-db
+    entrypoint: [ '/opt/keycloak/bin/kc.sh','start-dev' ]
 
   idp-db:
     image: postgres
