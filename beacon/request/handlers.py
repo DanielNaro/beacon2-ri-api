@@ -309,7 +309,7 @@ def filtering_terms_handler(db_fn, request=None):
                 access_token = access_token[7:]  # cut out 7 characters: len('Bearer ')
 
                 
-                authorized_datasets, authenticated = await resolve_token(access_token, search_datasets)
+                authorized_datasets, authenticated, _ = await resolve_token(access_token, search_datasets)
                 ##LOG.debug(authorized_datasets)
                 ##LOG.debug('all datasets:  %s', all_datasets)
                 LOG.info('resolved datasets:  %s', authorized_datasets)

@@ -945,22 +945,33 @@ def apply_alphanumeric_filter(query: dict, filter: AlphanumericFilter, collectio
 
 
 
-def apply_custom_filter(query: dict, filter: CustomFilter, collection:str) -> dict:
-    #LOG.debug(query)
-
-    scope = filter.scope
-    if scope is None and collection != 'g_variants':
-        scope = collection[0:-1]
-    elif scope is None:
-        scope = 'genomicVariation'
-    value_splitted = filter.id.split(':')
-    if value_splitted[0] in conf.alphanumeric_terms:
-        query_term = value_splitted[0]
+def further_breakdown(query_str) -> dict:
+    result: dict = {}
+    break_pos = query_str.index(':')
+    value_splitted = [query_str[:break_pos], query_str[break_pos + 1:]]
+    value_splitted[0] = re.sub('^\\{\\s*', "", value_splitted[0])
+    value_splitted[1] = re.sub('\\s*}$', "", value_splitted[1])
+    query_term = value_splitted[0]
+    if ':' in value_splitted[1]:
+        result[query_term] = further_breakdown(value_splitted[1])
     else:
-        query_term = value_splitted[0] + '.label'
-    query[query_term]=value_splitted[1]
-    query=cross_query(query, scope, collection, {})
+        if re.match("^\\d+(?:\\.\\d*)?$", value_splitted[1]):
+            result[query_term] = float(value_splitted[1])
+        else:
+            result[query_term] = value_splitted[1]
+    return result
 
 
-    #LOG.debug("QUERY: %s", query)
-    return query
+def apply_custom_filter(query: dict, filter: CustomFilter, collection: str) -> dict:
+    LOG.debug(f"query: {query}; filter: {filter}")
+
+    value_splitted = filter.id.split(':')
+    value_splitted = [filter.id[:break_pos], filter.id[break_pos + 1:]]
+    query_term = value_splitted[0] + '.label'
+    if ':' in value_splitted[1]:
+        query[query_term] = further_breakdown(value_splitted[1])
+    else:
+        if value_splitted[1].isnumeric():
+            query[query_term] = float(value_splitted[1])
+        else:
+            query[query_term] = value_splitted[1]

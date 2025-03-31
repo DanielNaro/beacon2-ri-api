@@ -10,3 +10,4 @@ class DefaultSchemas(Enum):
     GENOMICVARIATIONS = {"entityType": "genomicVariation", "schema": "beacon-g_variant-v2.0.0"}
     INDIVIDUALS = {"entityType": "individual", "schema": "beacon-individual-v2.0.0"}
     RUNS = {"entityType": "run", "schema": "beacon-run-v2.0.0"}
+    GENES_TO_VARIANTS = {"entityType": "genes_to_variants", "schema": "beacon-genes_to_variants-v2.0.0"}

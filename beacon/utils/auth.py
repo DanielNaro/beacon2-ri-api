@@ -9,12 +9,12 @@ from ..conf import permissions_url
 
 LOG = logging.getLogger(__name__)
 
-async def resolve_token(token, requested_datasets_ids):
+async def resolve_token(token, requested_datasets_ids) -> Tuple[List[str], bool, Optional[str]]:
     # If the user is not authenticated (ie no token)
     # we pass (requested_datasets, False) to the database function: it will filter out the datasets list, with the public ones
     if token is None:
         public_datasets = [ d["name"] for d in filter_public_datasets(requested_datasets_ids) ]
-        return public_datasets, False
+        return public_datasets, False, None
     new_requested_datasets_ids=[]
     for dataset in requested_datasets_ids:
         dataset=str(dataset)

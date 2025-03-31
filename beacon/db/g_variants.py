@@ -26,7 +26,8 @@ VARIANTS_PROPERTY_MAP = {
     "genomicAlleleShortForm": "identifiers.genomicHGVSId",
     "aminoacidChange": "molecularAttributes.aminoacidChanges",
     "clinicalRelevance": "caseLevelData.clinicalInterpretations.clinicalRelevance",
-    "mateName": "identifiers.genomicHGVSId"
+    "mateName": "identifiers.genomicHGVSId",
+    "dataset": "_info.datasetId"
 }
 
 def include_resultset_responses(query: Dict[str, List[dict]], qparams: RequestParams):
