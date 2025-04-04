@@ -145,3 +145,8 @@ beacon/db/ontologies/*
 frontend/*.env
 
 *.env
+deploy/data/analyses.json
+
+deploy/data/biosamples.json
+
+deploy/data/cohorts.json

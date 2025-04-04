@@ -13,11 +13,14 @@ services:
   ###########################################
 
   beacon-ri-tools:
-    image: beacon2ri/beacon_reference_implementation:v2.0.0
+    image: danielnaro/beacon2-ri-tools:v0
     hostname: beacon-ri-tools
     networks:
       - beacon-priv 
     tty: true
+    volumes:
+      - ./data:/data
+      - C:\Users\narow\GenClinLab\BeaconWorkspace\BeaconReferenceImplementation\tmp:/databases
 
   ###########################################
   # training-ui
@@ -35,13 +38,11 @@ services:
   # MongoDB Database
   ###########################################
 
-  db:
+  mongo:
     image: mongo:5
     mem_limit: 7500m
     mem_reservation: 2000M
     command: --wiredTigerCacheSizeGB 4
-    hostname: mongo
-    container_name: rimongo
     ports:
       - 27017:27017
     environment:
@@ -126,7 +127,7 @@ services:
   # and we don't need a delay in-between. We can rely on the depends_on only.
 
   idp:
-    image: keycloak/keycloak
+    image: keycloak/keycloak:latest
     #image: sleighzy/keycloak
     hostname: idp
     container_name: idp
@@ -134,8 +135,8 @@ services:
       # - KEYCLOAK_FRONTEND_URL=http://idp:8080/auth
       # - KEYCLOAK_LOGLEVEL=DEBUG
       # - ROOT_LOGLEVEL=DEBUG
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=secret
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=secret
       - DB_USER=admin
       - DB_PASSWORD=secret
       - DB_VENDOR=postgres
@@ -161,7 +162,7 @@ services:
       - my-app-network
     depends_on:
       - idp-db
-    entrypoint: [ '/opt/keycloak/bin/kc.sh','start-dev' ]
+    entrypoint: [ '/opt/keycloak/bin/kc.sh','start-dev','--hostname', 'http://localhost:8080', '--hostname-backchannel-dynamic', 'true']
 
   idp-db:
     image: postgres

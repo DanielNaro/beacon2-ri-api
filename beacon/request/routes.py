@@ -76,11 +76,11 @@ routes = [
     web.get('/api/runs/{id}/g_variants', generic_handler(db_fn=runs.get_variants_of_run)),
     web.get('/api/runs/{id}/analyses', generic_handler(db_fn=runs.get_analyses_of_run)),
 
-    web.get('/api/{tail:.*}', error.handler),
-    web.get('/{tail:.*}', error.handler),
-
     web.get('/api/gene_variants', generic_handler(db_fn=gene_variants.get_gene_variants)),
     web.get('/api/gene_variants/{id}', generic_handler(db_fn=gene_variants.get_gene_variants_with_id)),
+
+    web.get('/api/{tail:.*}', error.handler),
+    web.get('/{tail:.*}', error.handler),
 
 
 
@@ -141,6 +141,9 @@ routes = [
     web.post('/api/runs/{id}', generic_handler(db_fn=runs.get_run_with_id)),
     web.post('/api/runs/{id}/g_variants', generic_handler(db_fn=runs.get_variants_of_run)),
     web.post('/api/runs/{id}/analyses', generic_handler(db_fn=runs.get_analyses_of_run)),
+
+    web.post('/api/gene_variants', generic_handler(db_fn=gene_variants.get_gene_variants)),
+    web.post('/api/gene_variants/{id}', generic_handler(db_fn=gene_variants.get_gene_variants_with_id)),
 
     web.post('/api/{tail:.*}', error.handler),
     web.post('/{tail:.*}', error.handler)

@@ -48,13 +48,14 @@ With `mongo-express` we can see the contents of the database at [http://localhos
 To load the database we execute the following commands:
 
 ```bash
-docker cp /path/to/analyses.json rimongo:tmp/analyses.json
-docker cp /path/to/biosamples.json rimongo:tmp/biosamples.json
-docker cp /path/to/cohorts.json rimongo:tmp/cohorts.json
-docker cp /path/to/datasets.json rimongo:tmp/datasets.json
-docker cp /path/to/genomicVariations.json rimongo:tmp/genomicVariations.json
-docker cp /path/to/individuals.json rimongo:tmp/individuals.json
-docker cp /path/to/runs.json rimongo:tmp/runs.json
+docker cp ./data/processed_metadata/analyses.json deploy-mongo-1:/tmp/analyses.json
+docker cp ./data/processed_metadata/biosamples.json deploy-mongo-1:/tmp/biosamples.json
+docker cp ./data/processed_metadata/cohorts.json deploy-mongo-1:/tmp/cohorts.json
+docker cp ./data/processed_metadata/datasets.json deploy-mongo-1:/tmp/datasets.json
+docker cp ./data/processed_metadata/individuals.json deploy-mongo-1:/tmp/individuals.json
+docker cp ./data/processed_metadata/runs.json deploy-mongo-1:/tmp/runs.json
+docker cp ./data/processed_data/gene_to_variants.json deploy-mongo-1:/tmp/gene_to_variants.json
+docker cp ./data/processed_data/genomicVariationsVcf.json.gz deploy-mongo-1:/tmp/genomicVariationsVcf.json.gz
 ```
 
 ```bash
@@ -65,6 +66,7 @@ docker exec rimongo mongoimport --jsonArray --uri "mongodb://root:example@127.0.
 docker exec rimongo mongoimport --jsonArray --uri "mongodb://root:example@127.0.0.1:27017/beacon?authSource=admin" --file /tmp/genomicVariations.json --collection genomicVariations
 docker exec rimongo mongoimport --jsonArray --uri "mongodb://root:example@127.0.0.1:27017/beacon?authSource=admin" --file /tmp/individuals.json --collection individuals
 docker exec rimongo mongoimport --jsonArray --uri "mongodb://root:example@127.0.0.1:27017/beacon?authSource=admin" --file /tmp/runs.json --collection runs
+docker exec deploy-mongo-1 mongoimport --jsonArray --uri "mongodb://root:example@127.0.0.1:27017/beacon?authSource=admin" --file /tmp/genes_to_variants.json --collection genes_to_variants
 ```
 
 This loads the JSON files inside of the `data` folder into the MongoDB database container. Each time you import data you will have to create indexes for the queries to run smoothly. Please, check the next point about how to Create the indexes.

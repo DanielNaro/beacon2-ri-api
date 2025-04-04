@@ -135,7 +135,23 @@ def get_entry_types():
             },
             "additionallySupportedSchemas": []
         },
-
+        "gene_variant": {
+            "id": "run",
+            "name": "Sequencing run",
+            "ontologyTermForThisType": {
+                "id": "NCIT:C148088",
+                "label": "Sequencing run"
+            },
+            "partOfSpecification": "Beacon v2.0.0",
+            "description": "The valid and completed operation of a high-throughput sequencing instrument for a single sequencing process. [ NCI ]",
+            "defaultSchema": {
+                "id": DefaultSchemas.RUNS.value['schema'],
+                "name": "Default schema for a sequencing run",
+                "referenceToSchemaDefinition": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/main/models/json/beacon-v2-default-model/runs/defaultSchema.json",
+                "schemaVersion": "v2.0.0"
+            },
+            "additionallySupportedSchemas": []
+        },
     }
 
 
@@ -348,6 +364,13 @@ async def beacon_map(request):
                         "url": conf.uri + "runs/{id}/g_variants"
                     },
                 }
+            },
+            "gene_variants": {
+                "entryType": "gene_variant",
+                "openAPIEndpointsDefinition": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/main/models/json/beacon-v2-default-model/analyses/endpoints.json",
+                "rootUrl": conf.uri + "gene_variants",
+                "singleEntryUrl": conf.uri + "gene_variants/{id}",
+                "endpoints": {}
             },
         }
     }

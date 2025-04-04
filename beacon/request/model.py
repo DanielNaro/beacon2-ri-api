@@ -94,6 +94,12 @@ class RequestParams(CamelModel):
     meta: RequestMeta = RequestMeta()
     query: RequestQuery = RequestQuery()
 
+class GeneVariantsQuery(BaseModel):
+    min_biosamples: Optional[int] = None
+    max_biosamples: Optional[int] = None
+    min_variants: Optional[int] = None
+    max_variants: Optional[int] = None
+
 class SequenceQuery(BaseModel):
     referenceName: Union[str,int]
     start: int
@@ -194,6 +200,9 @@ class BracketQuery(BaseModel):
 class GenomicAlleleQuery(BaseModel):
     genomicAlleleShortForm: str
 
+class SexQuery(BaseModel):
+    sex: str
+
 class AminoacidChangeQuery(BaseModel):
     aminoacidChange: str
     geneId: str
@@ -215,7 +224,8 @@ class RequestParams(CamelModel):
                 self.query.include_resultset_responses = IncludeResultsetResponses(html.escape(v))
             elif k == 'filters':
                 self.query.request_parameters[k] = html.escape(v)
-            elif k in ["start", "end", "assemblyId", "referenceName", "referenceBases", "alternateBases", "variantType","variantMinLength","variantMaxLength","geneId","genomicAlleleShortForm","aminoacidChange","clinicalRelevance", "mateName"]:
+            elif k in ["start", "end", "assemblyId", "referenceName", "referenceBases", "alternateBases", "variantType","variantMinLength","variantMaxLength","geneId","genomicAlleleShortForm","aminoacidChange","clinicalRelevance", "mateName",
+                       "min_biosamples", "max_biosamples", "min_variants", "max_variants"]:
                 try:
                     if ',' in v:
                         v_splitted = v.split(',')
@@ -256,6 +266,11 @@ class RequestParams(CamelModel):
                 pass
             try:
                 GenomicAlleleQuery(**request_params)
+                return self
+            except Exception as e:
+                pass
+            try:
+                GeneVariantsQuery(**request_params)
                 return self
             except Exception as e:
                 pass

@@ -965,13 +965,18 @@ def further_breakdown(query_str) -> dict:
 def apply_custom_filter(query: dict, filter: CustomFilter, collection: str) -> dict:
     LOG.debug(f"query: {query}; filter: {filter}")
 
-    value_splitted = filter.id.split(':')
+    break_pos = filter.id.index(':')
     value_splitted = [filter.id[:break_pos], filter.id[break_pos + 1:]]
+    LOG.debug(f"value_splitted: {value_splitted}")
     query_term = value_splitted[0] + '.label'
     if ':' in value_splitted[1]:
         query[query_term] = further_breakdown(value_splitted[1])
+        LOG.debug("query[query_term]: %s", query[query_term])
     else:
         if value_splitted[1].isnumeric():
+            LOG.debug(f"float(value_splitted[1]): {float(value_splitted[1])}")
             query[query_term] = float(value_splitted[1])
         else:
+            LOG.debug(f"value_splitted[1]: {value_splitted[1]}")
             query[query_term] = value_splitted[1]
+    return query

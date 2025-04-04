@@ -65,7 +65,7 @@ def get_gene_variants(entry_id: Optional[str], qparams: RequestParams, dataset: 
     )
     LOG.debug("")
 
-    return schema, count, 1, docs
+    return schema, count, 1, docs, dataset
 
 
 def get_gene_variants_with_id(entry_id: Optional[str], qparams: RequestParams, dataset: str):
@@ -95,4 +95,4 @@ def get_gene_variants_with_id(entry_id: Optional[str], qparams: RequestParams, d
     )
     LOG.debug("")
 
-    return schema, count, 1, docs
+    return schema, count, 1, docs, dataset
